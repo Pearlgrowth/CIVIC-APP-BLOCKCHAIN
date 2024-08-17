@@ -2,7 +2,10 @@ import React, { useEffect, useState } from "react";
 import './index.scss'
 import { Actor, HttpAgent } from "@dfinity/agent";
 import { idlFactory as CivicChainIDL } from "../../declarations/Final_backend";
-const agent = new HttpAgent();
+const agent = new HttpAgent({
+  host: "http://localhost:3000",
+});
+agent.fetchRootKey();
 const civicChain = Actor.createActor(CivicChainIDL, {
   agent,
   canisterId: "bkyz2-fmaaa-aaaaa-qaaaq-cai", // Replace with your backend canister ID
@@ -51,23 +54,24 @@ function App() {
           value={milestones}
           onChange={(e) => setMilestones(e.target.value)}
         />
+        {/* Milestones: These are significant goals or checkpoints within a project. In the code, milestones are entered as a comma-separated string, which is then split into an array. Each milestone represents a key step in the project's progress. For example, if you're building a community center, milestones could be "Foundation Laid, Roof Installed, Painting Completed." */}
         <button onClick={addProject}> <p className = "projo">  Add Project</p></button>
       </div>
 
       <h2>Projects Added</h2>
       <ul>
-        {projects.map((proj, index) => (
-          <li key={index}>
-            <h3>{proj.name}</h3>
-            <p>Budget: {proj.budget}</p>
-            <p>Start Date: {new Date(proj.startDate / 1000000).toLocaleString()}</p>
-            <p>End Date: {new Date(proj.endDate / 1000000).toLocaleString()}</p>
-            <p>Milestones: {proj.milestones.join(", ")}</p>
-            <p>Completed Milestones: {proj.completedMilestones.join(", ")}</p>
-            <p>Funds Disbursed: {proj.fundsDisbursed}</p>
-          </li>
-        ))}
-      </ul>
+  {projects.map((proj, index) => (
+    <li key={index}>
+      <h3>{proj.name}</h3>
+      <p>Budget: {proj.budget.toString()}</p> {/* Convert BigInt to string for display */}
+      <p>Start Date: {new Date(Number(proj.startDate / 1000000n)).toLocaleString()}</p>
+      <p>End Date: {new Date(Number(proj.endDate / 1000000n)).toLocaleString()}</p>
+      <p>Milestones: {proj.milestones.join(", ")}</p>
+      <p>Completed Milestones: {proj.completedMilestones.join(", ")}</p>
+      <p>Funds Disbursed: {proj.fundsDisbursed.toString()}</p> {/* Convert BigInt to string for display */}
+    </li>
+  ))}
+</ul>
     </div>
   );
 }
